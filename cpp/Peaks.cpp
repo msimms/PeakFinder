@@ -26,6 +26,7 @@
 
 namespace Peaks
 {
+	// Computes the area of the given peak.
 	void Peaks::computeArea(double* data, size_t dataLen, GraphPeak& currentPeak)
 	{
 		currentPeak.area = (double)0.0;
@@ -40,16 +41,12 @@ namespace Peaks
 		}
 	}
 
-	GraphPeakList Peaks::findPeaksOverStd(double* data, size_t dataLen, size_t* numPeaks, double sigmas)
+	// Returns a list of peaks in the given array of numeric values. Only peaks that go above the given threshold will be counted.
+	GraphPeakList Peaks::findPeaksOverThreshold(double* data, size_t dataLen, size_t* numPeaks, double threshold)
 	{
 		std::vector<GraphPeak> peaks;
-		
 		GraphPeak currentPeak;
-		
-		double mean = Peaks::average(data, dataLen);
-		double stddev = sigmas * Peaks::standardDeviation(data, dataLen, mean);
-		double threshold = mean + stddev;
-		
+
 		for (size_t x = 0; x < dataLen; ++x)
 		{
 			double y = data[x];
@@ -59,9 +56,20 @@ namespace Peaks
 				// Have we found a peak? If so, add it and start looking for the next one.
 				if (currentPeak.rightTrough.x > 0)
 				{
-					Peaks::computeArea(data, dataLen, currentPeak);
-					peaks.push_back(currentPeak);
-					currentPeak.clear();
+					// Still descending
+					if (y <= currentPeak.rightTrough.y)
+					{
+						currentPeak.rightTrough.x = x;
+						currentPeak.rightTrough.y = y;
+					}
+
+					// Rising
+					else
+					{
+						Peaks::computeArea(data, dataLen, currentPeak);
+						peaks.push_back(currentPeak);
+						currentPeak.clear();
+					}
 				}
 				
 				// Are we looking for a left trough?
@@ -107,7 +115,17 @@ namespace Peaks
 		
 		return peaks;
 	}
-	
+
+	// Returns a list of peaks in the given array of numeric values. Only peaks that go above the given sigma line will be counted.
+	GraphPeakList Peaks::findPeaksOverStd(double* data, size_t dataLen, size_t* numPeaks, double sigmas)
+	{		
+		double mean = Peaks::average(data, dataLen);
+		double stddev = sigmas * Peaks::standardDeviation(data, dataLen, mean);
+		double threshold = mean + stddev;
+		return Peaks::findPeaksOverThreshold(data, dataLen, numPeaks, threshold);
+	}
+
+	// Computes the area of the given peak.
 	void Peaks::computeArea(const std::vector<double>& data, GraphPeak& currentPeak)
 	{
 		currentPeak.area = (double)0.0;
@@ -122,15 +140,11 @@ namespace Peaks
 		}
 	}
 
-	GraphPeakList Peaks::findPeaksOverStd(const std::vector<double>& data, double sigmas)
+	// Returns a list of peaks in the given array of numeric values. Only peaks that go above the given threshold will be counted.
+	GraphPeakList Peaks::findPeaksOverThreshold(const std::vector<double>& data, double threshold)
 	{
 		std::vector<GraphPeak> peaks;
-
 		GraphPeak currentPeak;
-
-		double mean = Peaks::average(data);
-		double stddev = sigmas * Peaks::standardDeviation(data, mean);
-		double threshold = mean + stddev;
 
 		uint64_t x = 0;
 
@@ -143,9 +157,20 @@ namespace Peaks
 				// Have we found a peak? If so, add it and start looking for the next one.
 				if (currentPeak.rightTrough.x > 0)
 				{
-					Peaks::computeArea(data, currentPeak);
-					peaks.push_back(currentPeak);
-					currentPeak.clear();
+					// Still descending
+					if (y <= currentPeak.rightTrough.y)
+					{
+						currentPeak.rightTrough.x = x;
+						currentPeak.rightTrough.y = y;
+					}
+
+					// Rising
+					else
+					{
+						Peaks::computeArea(data, currentPeak);
+						peaks.push_back(currentPeak);
+						currentPeak.clear();
+					}
 				}
 
 				// Are we looking for a left trough?
@@ -190,6 +215,15 @@ namespace Peaks
 		}
 		
 		return peaks;
+	}
+
+	// Returns a list of peaks in the given array of numeric values. Only peaks that go above the given sigma line will be counted.
+	GraphPeakList Peaks::findPeaksOverStd(const std::vector<double>& data, double sigmas)
+	{
+		double mean = Peaks::average(data);
+		double stddev = sigmas * Peaks::standardDeviation(data, mean);
+		double threshold = mean + stddev;
+		return Peaks::findPeaksOverThreshold(data, threshold);
 	}
 
 	double Peaks::average(const double* data, size_t numPoints)
@@ -264,6 +298,7 @@ namespace Peaks
 		return sqrt(var);
 	}
 
+	// Computes the area of the given peak.
 	void Peaks::computeArea(const GraphLine& data, GraphPeak& currentPeak)
 	{
 		currentPeak.area = (double)0.0;
@@ -287,16 +322,12 @@ namespace Peaks
 		}
 	}
 
-	GraphPeakList Peaks::findPeaksOverStd(const GraphLine& data, double sigmas)
+	// Returns a list of peaks in the given array of graph points. Only peaks that go above the given threshold will be counted.
+	GraphPeakList Peaks::findPeaksOverThreshold(const GraphLine& data, double threshold)
 	{
 		std::vector<GraphPeak> peaks;
-
 		GraphPeak currentPeak;
 
-		double mean = average(data);
-		double stddev = sigmas * standardDeviation(data, mean);
-		double threshold = mean + stddev;
-		
 		for (auto iter = data.begin(); iter < data.end(); ++iter)
 		{
 			const GraphPoint& pt = *iter;
@@ -306,9 +337,20 @@ namespace Peaks
 				// Have we found a peak? If so, add it and start looking for the next one.
 				if (currentPeak.rightTrough.x > 0) // Right trough is set
 				{
-					Peaks::computeArea(data, currentPeak);
-					peaks.push_back(currentPeak);
-					currentPeak.clear();
+					// Still descending
+					if (pt.y <= currentPeak.rightTrough.y)
+					{
+						currentPeak.rightTrough.x = pt.x;
+						currentPeak.rightTrough.y = pt.y;
+					}
+
+					// Rising
+					else
+					{
+						Peaks::computeArea(data, currentPeak);
+						peaks.push_back(currentPeak);
+						currentPeak.clear();
+					}
 				}
 
 				// Are we looking for a left trough?
@@ -350,6 +392,15 @@ namespace Peaks
 		return peaks;
 	}
 
+	// Returns a list of peaks in the given array of graph points. Only peaks that go above the given sigma line will be counted.
+	GraphPeakList Peaks::findPeaksOverStd(const GraphLine& data, double sigmas)
+	{
+		double mean = average(data);
+		double stddev = sigmas * standardDeviation(data, mean);
+		double threshold = mean + stddev;
+		return Peaks::findPeaksOverThreshold(data, threshold);
+	}
+
 	GraphPeakList Peaks::findPeaksOfSize(const GraphLine& data, double minPeakArea, double sigmas)
 	{
 		std::vector<GraphPeak> peaks;
@@ -369,12 +420,23 @@ namespace Peaks
 				// Have we found a peak? If so, add it and start looking for the next one.
 				if (currentPeak.rightTrough.x > 0) // Right trough is set
 				{
-					Peaks::computeArea(data, currentPeak);
-					if (currentPeak.area >= minPeakArea)
+					// Still descending
+					if (pt.y <= currentPeak.rightTrough.y)
 					{
-						peaks.push_back(currentPeak);
+						currentPeak.rightTrough.x = pt.x;
+						currentPeak.rightTrough.y = pt.y;
 					}
-					currentPeak.clear();
+
+					// Rising
+					else
+					{
+						Peaks::computeArea(data, currentPeak);
+						if (currentPeak.area >= minPeakArea)
+						{
+							peaks.push_back(currentPeak);
+						}
+						currentPeak.clear();
+					}
 				}
 
 				// Are we looking for a left trough?

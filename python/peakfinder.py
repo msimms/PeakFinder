@@ -49,13 +49,14 @@ def read_three_axis_data_from_csv(csv_file_name):
 	return columns
 
 def find_peaks(file_name, threshold):
+    """Runs the peak finding algorithm over the data that was read from the csv file."""
     real_path = os.path.realpath(file_name)
     csv_data = read_three_axis_data_from_csv(real_path)
 
     axis_peaks = {}
-    axis_peaks['x'] = peaks.find_peaks_in_numeric_array_over_threshold(csv_data[1], 0.0)
-    axis_peaks['y'] = peaks.find_peaks_in_numeric_array_over_threshold(csv_data[2], 0.0)
-    axis_peaks['z'] = peaks.find_peaks_in_numeric_array_over_threshold(csv_data[3], 0.0)
+    axis_peaks['x'] = peaks.find_peaks_in_numeric_array_over_threshold(csv_data[1], threshold)
+    axis_peaks['y'] = peaks.find_peaks_in_numeric_array_over_threshold(csv_data[2], threshold)
+    axis_peaks['z'] = peaks.find_peaks_in_numeric_array_over_threshold(csv_data[3], threshold)
     return axis_peaks
 
 def main():
@@ -72,6 +73,7 @@ def main():
 
     if len(args.csv) > 0:
         axis_peaks = find_peaks(args.csv, args.threshold)
+
         print("X-Axis Peaks")
         for peak in axis_peaks['x']:
             print(peak)
@@ -81,6 +83,8 @@ def main():
         print("Z-Axis Peaks")
         for peak in axis_peaks['z']:
             print(peak)
+    else:
+        print("A CSV file was not specified.")
 
 if __name__ == "__main__":
     main()

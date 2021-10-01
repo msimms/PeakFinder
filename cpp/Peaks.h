@@ -139,8 +139,11 @@ namespace Peaks
 		 * Returns a list of all statistically significant peaks in the given waveform.
 		 * These are defined as peaks that rise more than one standard deviation above the mean for at least three points on the x axis.
 		 */
+		static GraphPeakList findPeaksOverThreshold(double* data, size_t dataLen, size_t* numPeaks, double threshold = 0.0);
 		static GraphPeakList findPeaksOverStd(double* data, size_t dataLen, size_t* numPeaks, double sigmas = 1.0);
+		static GraphPeakList findPeaksOverThreshold(const std::vector<double>& data, double threshold = 0.0);
 		static GraphPeakList findPeaksOverStd(const std::vector<double>& data, double sigmas = 1.0);
+		static GraphPeakList findPeaksOverThreshold(const GraphLine& data, double threshold = 0.0);
 		static GraphPeakList findPeaksOverStd(const GraphLine& data, double sigmas = 1.0);
 		static GraphPeakList findPeaksOfSize(const GraphLine& data, double minPeakArea, double sigmas = 1.0);
 		

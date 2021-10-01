@@ -28,6 +28,7 @@
 
 typedef std::vector<double> NumVec;
 
+// Loads the peak data test file. Expected format is timestamp, x, y, z.
 std::vector<NumVec> readThreeAxisDataFromCsv(const std::string& fileName)
 {
 	std::vector<NumVec> columns;
@@ -64,46 +65,67 @@ std::vector<NumVec> readThreeAxisDataFromCsv(const std::string& fileName)
 	return columns;
 }
 
-void peakFindingTests(const std::vector<NumVec>& csvData)
+std::vector<Peaks::GraphPeakList> findPeaks(const std::vector<NumVec>& csvData, double threshold)
 {
+	std::vector<Peaks::GraphPeakList> axisPeaks;
+
 	auto csvIter = csvData.begin();
 	++csvIter; // Skip over the timestamp column
 
-	uint16_t axisCount = 0;
 	for (; csvIter != csvData.end(); ++csvIter)
 	{
-		std::cout << "Axis " << ++axisCount << ":" << std::endl;
-
-		const NumVec& columnData = (*csvIter);
-		uint64_t peakCount = 0;
-		std::vector<Peaks::GraphPeak> peaks = Peaks::Peaks::findPeaksOverStd(columnData, (double)1.5);
-		for (auto peakIter = peaks.begin(); peakIter != peaks.end(); ++peakIter)
-		{
-			Peaks::GraphPeak& peak = (*peakIter);
-			std::cout << "Peak " << ++peakCount << ": { " << peak.leftTrough.x << ", " << peak.peak.x << ", " << peak.rightTrough.x << ", " << peak.area << " }" << std::endl;
-		}
-		std::cout << std::endl;
+		auto peaks = Peaks::Peaks::findPeaksOverThreshold((*csvIter), threshold);
+		axisPeaks.push_back(peaks);
 	}
+	return axisPeaks;
 }
 
+// Entry point.
 int main(int argc, const char * argv[])
 {
 	const std::string OPTION_CSV_FILE = "--csv";
+	const std::string OPTION_THRESHOLD = "--threshold";
 
-	std::string csvFileName;
-	
+	std::string csvFileName = "/Users/mike/Code/GitHub/PeakFinder/data/pullups.csv";
+	double threshold = (double)0.0;
+
+	// Parse the command line options.
 	for (size_t i = 1; i < argc; ++i)
 	{
 		if ((OPTION_CSV_FILE.compare(argv[i]) == 0) && (i + 1 < argc))
 		{
 			csvFileName = argv[++i];
 		}
+		if ((OPTION_THRESHOLD.compare(argv[i]) == 0) && (i + 1 < argc))
+		{
+			threshold = atof(argv[++i]);
+		}
 	}
 
 	if (csvFileName.length() > 0)
 	{
-		std::vector<NumVec> csvData = readThreeAxisDataFromCsv(csvFileName);
-		std::cout << std::endl;
+		auto csvData = readThreeAxisDataFromCsv(csvFileName);
+		auto axisPeaks = findPeaks(csvData, threshold);
+
+		for (auto axisIter = axisPeaks.begin(); axisIter != axisPeaks.end(); ++axisIter)
+		{
+			Peaks::GraphPeakList& peaks = (*axisIter);
+
+			std::cout << "Axis Peaks" << std::endl;
+
+			for (auto peakIter = peaks.begin(); peakIter != peaks.end(); ++peakIter)
+			{
+				Peaks::GraphPeak& peak = (*peakIter);
+
+				std::cout << "{ " << peak.leftTrough.x << ", " << peak.peak.x << ", " << peak.rightTrough.x << ", " << peak.area << " }" << std::endl;
+			}
+
+			std::cout << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "" << std::endl;
 	}
 
 	return 0;
