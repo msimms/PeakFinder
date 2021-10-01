@@ -47,13 +47,25 @@ function parse_commandline()
             help = "A CSV file with accelerometer data"
             arg_type = String
             default = "../data/pullups.csv"
+        "--threshold"
+            help = "Peaks must be above this threshold value to be considered"
+            arg_type = Number
+            default = 0.0
     end
 
     return parse_args(s)
 end
 
-# Run all the unit tests
 parsed_args = parse_commandline()
 ts, x, y, z = read_accelerometer_csv(parsed_args["csv"])
-peaks = Peaks.find_peaks(data)
-println(peaks)
+
+x_peaks = Peaks.find_peaks_over_stddev(x)
+y_peaks = Peaks.find_peaks_over_stddev(y)
+z_peaks = Peaks.find_peaks_over_stddev(z)
+
+println("X-Axis Peaks")
+println(x_peaks)
+println("Y-Axis Peaks")
+println(y_peaks)
+println("Z-Axis Peaks")
+println(z_peaks)
