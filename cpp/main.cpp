@@ -86,7 +86,7 @@ int main(int argc, const char * argv[])
 	const std::string OPTION_CSV_FILE = "--csv";
 	const std::string OPTION_THRESHOLD = "--threshold";
 
-	std::string csvFileName = "/Users/mike/Code/GitHub/PeakFinder/data/pullups.csv";
+	std::string csvFileName = "";
 	double threshold = (double)0.0;
 
 	// Parse the command line options.

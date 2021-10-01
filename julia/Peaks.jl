@@ -69,9 +69,18 @@ function find_peaks_over_threshold(data::Array{Float64}, threshold = 0.0)
 
             # Have we found a peak? If so, add it and start looking for the next one.
             if current_peak.right_trough.x > 0
-                compute_area(data, current_peak)
-                push!(peaks, current_peak)
-                current_peak = GraphPeak(GraphPoint(0,0.0), GraphPoint(0,0.0), GraphPoint(0,0.0), 0.0)
+
+                # Still descending
+                if y <= current_peak.right_trough.y
+                    current_peak.right_trough.x = x
+                    current_peak.right_trough.y = y
+
+                # Rising
+                else
+                    compute_area(data, current_peak)
+                    push!(peaks, current_peak)
+                    current_peak = GraphPeak(GraphPoint(0,0.0), GraphPoint(0,0.0), GraphPoint(0,0.0), 0.0)
+                end
 
             # Are we looking for a left trough?
             elseif current_peak.left_trough.x == 0
@@ -168,9 +177,18 @@ function find_peaks_over_threshold(data::Array{GraphPoint}, threshold = 0.0)
 
             # Have we found a peak? If so, add it and start looking for the next one.
             if current_peak.right_trough.x > 0
-                compute_area(data, current_peak)
-                push!(peaks, current_peak)
-                current_peak = GraphPeak(GraphPoint(0,0.0), GraphPoint(0,0.0), GraphPoint(0,0.0), 0.0)
+
+                # Still descending
+                if y <= current_peak.right_trough.y
+                    current_peak.right_trough.x = x
+                    current_peak.right_trough.y = y
+
+                # Rising
+                else
+                    compute_area(data, current_peak)
+                    push!(peaks, current_peak)
+                    current_peak = GraphPeak(GraphPoint(0,0.0), GraphPoint(0,0.0), GraphPoint(0,0.0), 0.0)
+                end
 
             # Are we looking for a left trough?
             elseif current_peak.left_trough.x == 0

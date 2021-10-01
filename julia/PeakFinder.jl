@@ -58,14 +58,21 @@ end
 
 parsed_args = parse_commandline()
 ts, x, y, z = read_accelerometer_csv(parsed_args["csv"])
+threshold = parsed_args["threshold"]
 
-x_peaks = Peaks.find_peaks_over_stddev(x)
-y_peaks = Peaks.find_peaks_over_stddev(y)
-z_peaks = Peaks.find_peaks_over_stddev(z)
+x_peaks = Peaks.find_peaks_over_threshold(x, threshold)
+y_peaks = Peaks.find_peaks_over_threshold(y, threshold)
+z_peaks = Peaks.find_peaks_over_threshold(z, threshold)
 
 println("X-Axis Peaks")
-println(x_peaks)
+for peak in x_peaks
+    println("{ (", peak.left_trough.x, ", ", peak.left_trough.y, "), (", peak.right_trough.x, ", ", peak.right_trough.y, ")}")
+end
 println("Y-Axis Peaks")
-println(y_peaks)
+for peak in y_peaks
+    println("{ (", peak.left_trough.x, ", ", peak.left_trough.y, "), (", peak.right_trough.x, ", ", peak.right_trough.y, ")}")
+end
 println("Z-Axis Peaks")
-println(z_peaks)
+for peak in z_peaks
+    println("{ (", peak.left_trough.x, ", ", peak.left_trough.y, "), (", peak.right_trough.x, ", ", peak.right_trough.y, ")}")
+end
