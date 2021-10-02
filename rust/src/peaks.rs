@@ -20,8 +20,6 @@
 // SOFTWARE.
 #[allow(dead_code)]
 
-use statistics;
-
 #[derive(Copy, Clone)]
 pub struct GraphPoint {
     pub x: usize,
@@ -69,7 +67,7 @@ impl GraphPeak {
     }
 
     pub fn print(&self) {
-        println!("L {}, P {}, R {}", self.left_trough.x, self.peak.x, self.right_trough.x);
+        println!("Left {}, Peak {}, Right {}, Area {}", self.left_trough.x, self.peak.x, self.right_trough.x, self.area);
     }
 
     pub fn equals(&mut self, rhs: GraphPeak) -> bool {
@@ -103,14 +101,43 @@ pub fn compute_area(data: &Vec<f64>, current_peak: &mut GraphPeak) {
     }
 }
 
-// Returns a list of peaks in the given vector of numeric values. Only peaks that go above the given sigma line will be counted.
-pub fn find_peaks_over_stddev(data: &Vec<f64>, sigmas: f64) -> Vec<GraphPeak> {
+// Utility function.
+pub fn average_f64(data: &Vec<f64>) -> f64 {
+    let mut sum = 0.0;
+
+    for item in data {
+        sum = sum + *item;
+    }
+
+    let denominator = data.len();
+    sum = sum / denominator as f64;
+    sum
+}
+
+// Utility function.
+pub fn variance_f64(data: &Vec<f64>, mean: f64) -> f64 {
+    let mut numerator = 0.0;
+
+    for item in data {
+        numerator = numerator + ((*item - mean) * (*item - mean));
+    }
+
+    let denominator = (data.len() - 1) as f64;
+    let variance = numerator / denominator;
+    variance
+}
+
+// Utility function.
+pub fn standard_deviation_f64(data: &Vec<f64>, mean: f64) -> f64 {
+    let var = variance_f64(data, mean);
+    let std_dev = var.sqrt();
+    std_dev
+}
+
+// Returns a list of peaks in the given array of numeric values. Only peaks that go above the given threshold will be counted.
+pub fn find_peaks_over_threshold(data: &Vec<f64>, threshold: f64) -> Vec<GraphPeak> {
     let mut peaks: Vec<GraphPeak> = Vec::new();
     let mut current_peak = GraphPeak::new();
-
-    let mean = statistics::average_f64(data);
-    let stddev = sigmas * statistics::standard_deviation_f64(data, mean);
-    let threshold = mean + stddev;
 
     for x in 0..data.len() {
         let y = data[x];
@@ -168,6 +195,16 @@ pub fn find_peaks_over_stddev(data: &Vec<f64>, sigmas: f64) -> Vec<GraphPeak> {
             current_peak.left_trough.y = y;
         }
     }
+
+    peaks
+}
+
+// Returns a list of peaks in the given vector of numeric values. Only peaks that go above the given sigma line will be counted.
+pub fn find_peaks_over_stddev(data: &Vec<f64>, sigmas: f64) -> Vec<GraphPeak> {
+    let mean = average_f64(data);
+    let stddev = sigmas * standard_deviation_f64(data, mean);
+    let threshold = mean + stddev;
+    let peaks = find_peaks_over_threshold(data, threshold);
 
     peaks
 }
