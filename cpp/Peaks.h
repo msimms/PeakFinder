@@ -145,8 +145,7 @@ namespace Peaks
 		static GraphPeakList findPeaksOverStd(const std::vector<double>& data, double sigmas = 1.0);
 		static GraphPeakList findPeaksOverThreshold(const GraphLine& data, double threshold = 0.0);
 		static GraphPeakList findPeaksOverStd(const GraphLine& data, double sigmas = 1.0);
-		static GraphPeakList findPeaksOfSize(const GraphLine& data, double minPeakArea, double sigmas = 1.0);
-		
+
 	private:
 		static double average(const double* data, size_t numPoints);
     	static double average(const std::vector<double>& data);
