@@ -78,6 +78,9 @@ mod tests {
         let y_peaks = crate::peaks::find_peaks_over_threshold(&accel_data.y, 0.0);
         let z_peaks = crate::peaks::find_peaks_over_threshold(&accel_data.z, 0.0);
 
+        assert!(x_peaks.len() == 0);
+        assert!(y_peaks.len() == 11);
+
         println!("\nX Peaks:");
         for peak in x_peaks {
             peak.print();
