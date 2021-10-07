@@ -1,7 +1,11 @@
 [package]
 name = "peak_finder"
 version = "1.0.0"
-authors = ["Mike Simms <msimms01@gmail.com>"]
+authors = ["Michael J Simms <msimms01@gmail.com>"]
+readme = "../README.md"
+description = "An algorithm for identifying peaks from line data, such as from accelerometer or spectral data."
+repository = "https://github.com/msimms/PeakFinder/"
+license = "MIT"
 edition = "2018"
 
 [dependencies]
