@@ -29,7 +29,7 @@ Copy the file `peaks.py` into your project, though I will eventually create a `p
 
 ### Rust
 
-Copy the file `peaks.rs` into your project or install the cargo package. Look at `lib.rs` for an example. The available functions are:
+Install the cargo package `peak_finder`. If you really don't want the package dependency, you could just copy the file `peaks.rs` into your project. Look at `lib.rs` for example usage. The available functions are:
 * `find_peaks_in_numeric_array_over_threshold(data, threshold)`
 * `find_peaks_in_numeric_array_over_stddev(data, sigmas)`
 
