@@ -1,3 +1,5 @@
+[![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
+
 # PeakFinder
 
 A library for identifying peaks in line data with implementations in multiple languages.  The line data could be from accelerometer data, spectral data, stock price history, almost anything.
