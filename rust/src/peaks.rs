@@ -90,7 +90,7 @@ impl GraphPeak {
 }
 
 // Computes the area of the given peak.
-pub fn compute_area(data: &Vec<f64>, current_peak: &mut GraphPeak) {
+pub fn compute_area(data: &[f64], current_peak: &mut GraphPeak) {
     current_peak.area = 0.0;
     
     if current_peak.left_trough.x < current_peak.right_trough.x {
@@ -102,7 +102,7 @@ pub fn compute_area(data: &Vec<f64>, current_peak: &mut GraphPeak) {
 }
 
 // Utility function.
-pub fn average_f64(data: &Vec<f64>) -> f64 {
+pub fn average_f64(data: &[f64]) -> f64 {
     let mut sum = 0.0;
 
     for item in data {
@@ -115,7 +115,7 @@ pub fn average_f64(data: &Vec<f64>) -> f64 {
 }
 
 // Utility function.
-pub fn variance_f64(data: &Vec<f64>, mean: f64) -> f64 {
+pub fn variance_f64(data: &[f64], mean: f64) -> f64 {
     let mut numerator = 0.0;
 
     for item in data {
@@ -128,14 +128,14 @@ pub fn variance_f64(data: &Vec<f64>, mean: f64) -> f64 {
 }
 
 // Utility function.
-pub fn standard_deviation_f64(data: &Vec<f64>, mean: f64) -> f64 {
+pub fn standard_deviation_f64(data: &[f64], mean: f64) -> f64 {
     let var = variance_f64(data, mean);
     let std_dev = var.sqrt();
     std_dev
 }
 
 // Returns a list of peaks in the given array of numeric values. Only peaks that go above the given threshold will be counted.
-pub fn find_peaks_over_threshold(data: &Vec<f64>, threshold: f64) -> Vec<GraphPeak> {
+pub fn find_peaks_over_threshold(data: &[f64], threshold: f64) -> Vec<GraphPeak> {
     let mut peaks: Vec<GraphPeak> = Vec::new();
     let mut current_peak = GraphPeak::new();
 
@@ -200,7 +200,7 @@ pub fn find_peaks_over_threshold(data: &Vec<f64>, threshold: f64) -> Vec<GraphPe
 }
 
 // Returns a list of peaks in the given vector of numeric values. Only peaks that go above the given sigma line will be counted.
-pub fn find_peaks_over_stddev(data: &Vec<f64>, sigmas: f64) -> Vec<GraphPeak> {
+pub fn find_peaks_over_stddev(data: &[f64], sigmas: f64) -> Vec<GraphPeak> {
     let mean = average_f64(data);
     let stddev = sigmas * standard_deviation_f64(data, mean);
     let threshold = mean + stddev;
